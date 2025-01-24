@@ -1,0 +1,63 @@
+.main-container {
+  min-height: 100vh;
+  background-color: #1d1b1b; /* Fondo de color gris claro */
+  display: flex;
+  justify-content: center;
+  align-items: flex-start; /* Alineación al inicio */
+  padding: 20px;
+}
+
+.left-section,
+.right-section {
+  backdrop-filter: blur(70px);
+  border-radius: 12px;
+  padding: 20px;
+  background-color: rgba(0, 0, 0, 0.205); /* Fondo con transparencia */
+}
+
+.left-section {
+  margin-right: 10px;
+  color: "white";
+}
+
+.materia-item {
+  display: flex;
+  justify-content: space-between;
+  background-color: rgba(255, 255, 255, 0.2);
+  margin-bottom: 10px;
+  border-radius: 8px;
+  padding: 10px;
+}
+
+.materia-item.low-grade {
+  background-color: rgba(255, 0, 0, 0.356); /* Notas bajas en rojo */
+}
+
+.materia-info {
+  display: flex;
+  flex-direction: column;
+  color: "white";
+}
+
+.materia-info strong {
+  font-size: 16px;
+  color: "white";
+}
+
+.right-section {
+  text-align: center;
+  color: rgb(255, 255, 255); /* Color de texto para datos de cuenta */
+}
+
+.account-details p {
+  font-size: 16px;
+  color: "white";
+}
+.top-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #333;
+  padding: 10px 20px;
+  color: white;
+}

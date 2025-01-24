@@ -1,0 +1,46 @@
+.login-container {
+  min-height: 100vh; /* Altura completa de la pantalla */
+  display: flex; /* Activa flexbox */
+  justify-content: center; /* Centra horizontalmente */
+  align-items: center; /* Centra verticalmente */
+  background-image: url("../assets/images/bg.jpg"); /* Ruta de la imagen */
+  background-repeat: repeat; /* Repetir la imagen en ambas direcciones */
+  background-size: 20%; /* Ajusta el tamaño del patrón */
+  background-color: #f0f0f0; /* Color de fondo en caso de que falten imágenes */
+  padding: 0 20px; /* Asegura un espacio alrededor en pantallas pequeñas */
+}
+
+.login-box {
+  background: rgba(255, 255, 255, 0.068); /* Fondo blanco semitransparente */
+  backdrop-filter: blur(10px); /* Efecto de desenfoque */
+  border-radius: 12px; /* Bordes redondeados */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Sombra suave */
+  padding: 40px 20px; /* Espaciado interno */
+  width: 100%; /* Asegura que se ajuste a los tamaños de dispositivos */
+  max-width: 400px; /* Tamaño máximo del cuadro */
+}
+
+/* Fondo transparente y texto blanco para los inputs */
+.login-box .form-control {
+  background-color: transparent; /* Fondo transparente */
+  color: white; /* Texto blanco */
+  border: 1px solid white; /* Borde blanco */
+}
+
+/* Cambiar el color del label */
+.login-box .form-label {
+  color: white; /* Color blanco */
+}
+
+/* Placeholder con texto blanco y opacidad */
+.login-box .form-control::placeholder {
+  color: rgba(255, 255, 255, 0.7); /* Placeholder blanco con opacidad */
+}
+
+/* Inputs al enfocarse */
+.login-box .form-control:focus {
+  background-color: transparent; /* Mantener fondo transparente */
+  color: white; /* Mantener texto blanco */
+  border-color: #007bff; /* Cambiar el color del borde al enfocarse */
+  box-shadow: none; /* Evitar el efecto de sombra */
+}
