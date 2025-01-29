@@ -93,7 +93,7 @@ function MainApp() {
       <CContainer>
         <CRow>
           {/* Condicional para mostrar vista de estudiante o profesor */}
-          {roleUser === "Estudiante" ? (
+          {roleUser === "Representante" ? (
             <>
               {/* Sección Izquierda: Vista del Estudiante */}
               <CCol lg={8} md={8} sm={12}>
@@ -254,7 +254,7 @@ function MainApp() {
       </CContainer>
 
       {/* Modal para estudiantes */}
-      {roleUser === "Estudiante" && (
+      {roleUser === "Representante" && (
         <CModal visible={visible} onClose={handleModal}>
           <CModalHeader>Pedir Mejora de Calificación</CModalHeader>
           <CModalBody>

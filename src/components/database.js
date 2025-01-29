@@ -14,8 +14,8 @@ let users = [
   },
   {
     id: 2,
-    email: "stu@stu.com",
-    password: "stu",
+    email: "rep@rep.com",
+    password: "rep",
     representanteNombre: "David Fernandez Arroyo",
     representanteCedula: "1234567890",
     nombreCompleto: "Luis Fernandez Torres",
@@ -23,7 +23,20 @@ let users = [
     paralelo: "B",
     jornada: "Vespertina",
     materia: "",
-    role: "Estudiante",
+    role: "Representante",
+  },
+  {
+    id: 3,
+    email: "admin@admin.com",
+    password: "admin",
+    representanteNombre: "David Fernandez Arroyo",
+    representanteCedula: "1234567890",
+    nombreCompleto: "Luis Fernandez Torres",
+    grado: "3ro Ciencias",
+    paralelo: "B",
+    jornada: "Vespertina",
+    materia: "",
+    role: "Representante",
   },
 ];
 let userLogin = 0;
