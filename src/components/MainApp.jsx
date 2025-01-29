@@ -10,13 +10,13 @@ import {
   CModalHeader,
   CModalBody,
   CModalFooter,
+  CFormInput,
 } from "@coreui/react";
 import "./MainApp.css";
 import { useNavigate } from "react-router-dom";
 import { PDFDownloadLink } from "@react-pdf/renderer";
 import MyDocument from "./MyDocument";
 import { getIdUser, findUserById } from "./database";
-
 function MainApp() {
   const navigate = useNavigate();
   // Estados para el modal
@@ -61,6 +61,18 @@ function MainApp() {
   console.log(cuenta.id + " - " + roleUser);
   // Función para manejar el modal
   const handleModal = () => setVisible(!visible);
+  const [selectedFile, setSelectedFile] = useState(null);
+  const handleFileChange = (event) => {
+    setSelectedFile(event.target.files[0]);
+  };
+  const handleFileUpload = () => {
+    if (selectedFile) {
+      console.log("Archivo subido:", selectedFile.name);
+      alert("Archivo subido exitosamente");
+    } else {
+      alert("Por favor, seleccione un archivo antes de subirlo.");
+    }
+  };
 
   // Función para manejar el cierre de sesión
   const handleLogout = () => {
@@ -246,25 +258,39 @@ function MainApp() {
         <CModal visible={visible} onClose={handleModal}>
           <CModalHeader>Pedir Mejora de Calificación</CModalHeader>
           <CModalBody>
-            Aquí puedes descargar un PDF con la solicitud para la mejora de
-            calificación. También se enviará un correo electrónico al docente.
-          </CModalBody>
-          <CModalFooter>
-            <CButton color="secondary" onClick={handleModal}>
-              Cancelar
-            </CButton>
+            Descargue el PDF para firmarlo digitalmente. <br />
             <PDFDownloadLink
               document={<MyDocument dataUser={cuenta} grade={selectGrade} />}
               fileName="Solicitud_Mejora.pdf"
             >
               {({ loading }) =>
                 loading ? (
-                  <button className="btn btn-primary">Cargando...</button>
+                  <CButton color="primary">Cargando...</CButton>
                 ) : (
-                  <button className="btn btn-primary">Descargar PDF</button>
+                  <CButton color="primary">Descargar PDF</CButton>
                 )
               }
             </PDFDownloadLink>
+            <br />
+            Cuando ya esté firmado, suba el documento:
+            <CFormInput
+              type="file"
+              accept="application/pdf"
+              onChange={handleFileChange}
+              className="mt-2"
+            />
+            <CButton
+              color="success"
+              onClick={handleFileUpload}
+              className="mt-2"
+            >
+              Subir Documento
+            </CButton>
+          </CModalBody>
+          <CModalFooter>
+            <CButton color="secondary" onClick={handleModal}>
+              Cancelar
+            </CButton>
           </CModalFooter>
         </CModal>
       )}
