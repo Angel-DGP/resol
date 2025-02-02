@@ -10,7 +10,7 @@ import {
 import hd from "../assets/images/header.png";
 import ft from "../assets/images/feat.png";
 import table from "../assets/images/table.png";
-const MyDocument = ({ dataUser, grade }) => {
+const MyDocument = ({ dataUser, grade, teacher }) => {
   const styles = StyleSheet.create({
     page: {
       flexDirection: "column",
@@ -102,7 +102,7 @@ const MyDocument = ({ dataUser, grade }) => {
             {formattedDate}
           </Text>
           <Text style={styles.text}>Señor/a.</Text>
-          <Text style={styles.text}>Lic./Mgt. {grade.docente} </Text>
+          <Text style={styles.text}>Lic./Mgt. {teacher.nombreCompleto} </Text>
           <Text style={styles.text}>
             Docente de la asignatura de {grade.nombre}
           </Text>

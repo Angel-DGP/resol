@@ -25,7 +25,6 @@ function Login() {
     }
     if (email === "" || password === "") {
       setErrorLogin("Ingrese datos por favor");
-      navigate("/main");
     }
   };
   const [showModal, setShowModal] = useState(false);
@@ -74,10 +73,17 @@ function Login() {
                 Inicia Sesión
               </CButton>
               <div>
-                <Button variant="primary" onClick={handleShow}>
-                  Registrar Usuario
-                </Button>
-                <RegisterModal show={showModal} handleClose={handleClose} />
+                <RegisterModal
+                  show={showModal}
+                  handleClose={handleClose}
+                  className="w-100"
+                />
+                <p style={{ color: "white", textAlign: "center" }}>
+                  No tienes cuenta?{" "}
+                  <a onClick={handleShow} href="#">
+                    Crea una cuenta
+                  </a>
+                </p>
               </div>
             </div>
           </CCol>

@@ -1,3 +1,4 @@
+// Definición de usuarios
 let users = [
   {
     id: 1,
@@ -9,8 +10,10 @@ let users = [
     grado: "",
     paralelo: "",
     jornada: "",
-    materia: "Matemáticas",
+    materias: [1],
     role: "Profesor",
+    notas: [],
+    intentos: 0,
   },
   {
     id: 2,
@@ -22,8 +25,20 @@ let users = [
     grado: "3ro Ciencias",
     paralelo: "B",
     jornada: "Vespertina",
-    materia: "",
+    materias: [1, 2, 3, 4, 5, 6, 7, 8, 9],
     role: "Representante",
+    notas: [
+      { id: 1, nota: "No ingresado", edit: 0 },
+      { id: 2, nota: "No ingresado", edit: 0 },
+      { id: 3, nota: "No ingresado", edit: 0 },
+      { id: 4, nota: "No ingresado", edit: 0 },
+      { id: 5, nota: "No ingresado", edit: 0 },
+      { id: 6, nota: "No ingresado", edit: 0 },
+      { id: 7, nota: "No ingresado", edit: 0 },
+      { id: 8, nota: "No ingresado", edit: 0 },
+      { id: 9, nota: "No ingresado", edit: 0 },
+    ],
+    intentos: 0,
   },
   {
     id: 3,
@@ -35,34 +50,120 @@ let users = [
     grado: "3ro Ciencias",
     paralelo: "B",
     jornada: "Vespertina",
-    materia: "",
-    role: "Representante",
+    materias: [],
+    role: "admin",
+    notas: [],
+    intentos: 0,
+  },
+  {
+    id: 4,
+    email: "teac@teac.com",
+    password: "teac",
+    representanteNombre: "",
+    representanteCedula: "",
+    nombreCompleto: "Lerdo Perez Estupiñan",
+    grado: "",
+    paralelo: "",
+    jornada: "",
+    materias: [1],
+    role: "Profesor",
+    notas: [],
+    intentos: 0,
   },
 ];
+
+// Definición de materias
+let grades = [
+  { id: 1, nombre: "Lengua y literatura" },
+  { id: 2, nombre: "Química" },
+  { id: 3, nombre: "Historia" },
+  { id: 4, nombre: "Matemáticas" },
+  { id: 5, nombre: "Física" },
+  { id: 6, nombre: "Fílosfía" },
+  { id: 7, nombre: "Ciencias Naturales" },
+  { id: 8, nombre: "Estudios Sociales" },
+  { id: 9, nombre: "Biología" },
+];
+
+// Array de peticiones (solicitudes de mejora)
+// Cada petición registra: id, idM (materia), idTea (profesor que ingresa la nota), idRep (representante que solicita la mejora), fecha y nota (solicitada)
+let peticiones = [
+  { id: 1, idM: 1, idTea: 1, idRep: 2, fecha: "2023-01-01 10:00", nota: 5.5 },
+  { id: 2, idM: 2, idTea: 4, idRep: 2, fecha: "2023-01-02 11:00", nota: 6.0 },
+  { id: 3, idM: 3, idTea: 1, idRep: 2, fecha: "2023-01-03 12:00", nota: 4.5 },
+];
+
 let userLogin = 0;
-export const getUsers = () => {
-  return users;
+
+// Funciones auxiliares
+
+export const getPeticiones = () => peticiones;
+
+export const addPeticion = (peticion) => {
+  peticion.id = peticiones.length + 1;
+  peticiones.push(peticion);
 };
-export const findUserById = (id) => {
+
+export const usersInGradeById = (idGrade) => {
+  let matriculados = 0;
   for (let i = 0; i < users.length; i++) {
-    if (users[i].id === id) {
-      return users[i];
+    // Se asume que el arreglo de materias en cada usuario es completo
+    if (
+      users[i].role === "Representante" &&
+      users[i].materias.includes(idGrade)
+    ) {
+      matriculados++;
     }
   }
+  return matriculados;
 };
+
+export const teaGradeById = (idGrade) => {
+  let profesores = [];
+  for (let i = 0; i < users.length; i++) {
+    if (users[i].role === "Profesor" && users[i].materias.includes(idGrade)) {
+      profesores.push(users[i].nombreCompleto);
+    }
+  }
+  return profesores;
+};
+
+export const getGradeById = (id) => {
+  return grades.find((g) => g.id === id);
+};
+
+export const getUsers = () => users;
+
+export const findUserById = (id) => users.find((u) => u.id === id);
+
 export const addUser = (newUser) => {
+  newUser.id = users.length + 1;
   users.push(newUser);
 };
+
 export const setIdUser = (id) => {
   userLogin = id;
 };
-export const getIdUser = () => {
-  return userLogin;
-};
+
+export const getIdUser = () => userLogin;
+
 export const getRoleUser = (id) => {
-  for (let i = 0; i < users.length; i++) {
-    if (users[i].id === id) {
-      return users.role[i];
-    }
-  }
+  let user = findUserById(id);
+  return user ? user.role : null;
 };
+
+export const getNotaGradeById = (idGrade, idU) => {
+  let user = findUserById(idU);
+  if (!user) return null;
+  let notaObj = user.notas.find((n) => n.id === idGrade);
+  return notaObj ? notaObj.nota : null;
+};
+
+export const getNotaEditGradeById = (idGrade, idU) => {
+  let user = findUserById(idU);
+  if (!user) return null;
+  let notaObj = user.notas.find((n) => n.id === idGrade);
+  return notaObj ? notaObj.edit : null;
+};
+
+export { grades };

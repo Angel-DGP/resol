@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import { Modal, Button, Form, Row, Col } from "react-bootstrap";
+import "./RegisterModal.css";
+import { addUser, getUsers } from "./database"; // Asegúrate de importar estas funciones
 
 const RegisterModal = ({ show, handleClose }) => {
   const [role, setRole] = useState(""); // Estado para guardar el rol
@@ -12,33 +14,36 @@ const RegisterModal = ({ show, handleClose }) => {
     grado: "",
     paralelo: "",
     jornada: "",
-    materias: [],
+    materias: [], // Ahora guardará solo IDs
+    notas: [],
+    intentos: 0,
   });
 
   const materiasList = [
-    "Lengua y Literatura",
-    "Matemáticas",
-    "Ciencias Naturales",
-    "Química",
-    "Física",
-    "Estudios Sociales",
-    "Historia",
-    "Filosofía",
-    "Biología",
+    { id: 1, nombre: "Lengua y Literatura" },
+    { id: 2, nombre: "Química" },
+    { id: 3, nombre: "Historia" },
+    { id: 4, nombre: "Matemáticas" },
+    { id: 5, nombre: "Física" },
+    { id: 6, nombre: "Filosofía" },
+    { id: 7, nombre: "Ciencias Naturales" },
+    { id: 8, nombre: "Estudios Sociales" },
+    { id: 9, nombre: "Biología" },
   ];
 
   // Manejador de cambio para inputs
   const handleChange = (e) => {
     const { name, value } = e.target;
+
     if (name === "materias") {
-      // Para manejar las materias seleccionadas
-      const selectedMaterias = formData.materias.includes(value)
-        ? formData.materias.filter((materia) => materia !== value)
-        : [...formData.materias, value];
+      const selectedId = parseInt(value, 10);
+      const selectedMaterias = formData.materias.includes(selectedId)
+        ? formData.materias.filter((id) => id !== selectedId)
+        : [...formData.materias, selectedId];
 
       setFormData((prevData) => ({
         ...prevData,
-        [name]: selectedMaterias,
+        materias: selectedMaterias, // Solo guarda IDs
       }));
     } else {
       setFormData((prevData) => ({
@@ -51,12 +56,20 @@ const RegisterModal = ({ show, handleClose }) => {
   // Manejador para cuando el formulario es enviado
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Aquí puedes manejar el envío de los datos del formulario
-    console.log(formData);
+
+    const newUser = {
+      id: getUsers().length + 1, // Generar un nuevo ID
+      ...formData,
+      role, // Agregar el rol seleccionado
+    };
+
+    addUser(newUser); // Agregar el usuario a la base primitiva
+    console.log("Usuario registrado:", newUser);
+    handleClose(); // Cerrar el modal después de guardar
   };
 
   return (
-    <Modal show={show} onHide={handleClose}>
+    <Modal show={show} onHide={handleClose} className="modal-dark" size="lg">
       <Modal.Header closeButton>
         <Modal.Title>Registrar Usuario</Modal.Title>
       </Modal.Header>
@@ -70,6 +83,7 @@ const RegisterModal = ({ show, handleClose }) => {
               name="email"
               value={formData.email}
               onChange={handleChange}
+              required
             />
           </Form.Group>
 
@@ -81,6 +95,7 @@ const RegisterModal = ({ show, handleClose }) => {
               name="password"
               value={formData.password}
               onChange={handleChange}
+              required
             />
           </Form.Group>
 
@@ -90,14 +105,15 @@ const RegisterModal = ({ show, handleClose }) => {
               as="select"
               onChange={(e) => setRole(e.target.value)}
               value={role}
+              required
             >
               <option value="">Seleccionar rol</option>
-              <option value="estudiante">Estudiante</option>
-              <option value="profesor">Profesor</option>
+              <option value="Representante">Representante</option>
+              <option value="Profesor">Profesor</option>
             </Form.Control>
           </Form.Group>
 
-          {role === "estudiante" && (
+          {role === "Representante" && (
             <>
               <Form.Group controlId="formRepresentanteNombre">
                 <Form.Label>Nombre del Representante</Form.Label>
@@ -170,13 +186,13 @@ const RegisterModal = ({ show, handleClose }) => {
               <Form.Label>Materias que cursa</Form.Label>
               <Row>
                 {materiasList.map((materia) => (
-                  <Col key={materia} md={4}>
+                  <Col key={materia.id} md={4}>
                     <Form.Check
                       type="checkbox"
-                      label={materia}
+                      label={materia.nombre}
                       name="materias"
-                      value={materia}
-                      checked={formData.materias.includes(materia)}
+                      value={materia.id}
+                      checked={formData.materias.includes(materia.id)}
                       onChange={handleChange}
                     />
                   </Col>
@@ -185,7 +201,7 @@ const RegisterModal = ({ show, handleClose }) => {
             </>
           )}
 
-          {role === "profesor" && (
+          {role === "Profesor" && (
             <>
               <Form.Group controlId="formNombreCompletoProfesor">
                 <Form.Label>Nombre Completo</Form.Label>
@@ -201,13 +217,13 @@ const RegisterModal = ({ show, handleClose }) => {
               <Form.Label>Materias que enseña</Form.Label>
               <Row>
                 {materiasList.map((materia) => (
-                  <Col key={materia} md={4}>
+                  <Col key={materia.id} md={4}>
                     <Form.Check
                       type="checkbox"
-                      label={materia}
+                      label={materia.nombre}
                       name="materias"
-                      value={materia}
-                      checked={formData.materias.includes(materia)}
+                      value={materia.id}
+                      checked={formData.materias.includes(materia.id)}
                       onChange={handleChange}
                     />
                   </Col>
@@ -215,12 +231,16 @@ const RegisterModal = ({ show, handleClose }) => {
               </Row>
             </>
           )}
-
-          <Button variant="primary" type="submit">
-            Registrar
-          </Button>
         </Form>
       </Modal.Body>
+      <Modal.Footer>
+        <Button variant="primary" type="submit" onClick={handleSubmit}>
+          Registrar
+        </Button>
+        <Button variant="secondary" onClick={handleClose}>
+          Cerrar
+        </Button>
+      </Modal.Footer>
     </Modal>
   );
 };
