@@ -34,6 +34,7 @@ import {
   getNotaEditGradeById,
   getPeticiones,
   addPeticion,
+  getPeticionesById,
 } from "./database";
 
 // Modal de ingreso de notas (vista del Profesor)
@@ -53,9 +54,11 @@ function MainApp() {
   const [editEmail, setEditEmail] = useState("");
   const [editRole, setEditRole] = useState("");
   const [editMaterias, setEditMaterias] = useState("");
-  const [editIntentos, setEditIntentos] = useState("");
+  const [editIntentosI, setEditIntentosI] = useState("");
+  const [editIntentosD, setEditIntentosD] = useState("");
   const [selectedFile, setSelectedFile] = useState(null);
   const [notifications, setNotifications] = useState([]);
+  const [mejora, setMejora] = useState("");
 
   let cuenta = findUserById(getIdUser());
   let roleUser = cuenta.role;
@@ -63,10 +66,15 @@ function MainApp() {
   // Cargar notificaciones al iniciar
   useEffect(() => {
     const loadNotifications = () => {
-      const peticiones = getPeticiones();
+      const peticiones = getPeticionesById(cuenta.id);
+      console.log(peticiones);
       const nuevasNotificaciones = peticiones.map((peticion) => ({
         id: peticion.id,
-        message: `Nueva solicitud de mejora en ${getGradeById(peticion.idM).nombre}`,
+        message: `Nueva solicitud de mejora en ${
+          getGradeById(peticion.idM).nombre
+        } por ${findUserById(peticion.idRep).nombreCompleto} del ${
+          findUserById(peticion.idRep).grado
+        } "${findUserById(peticion.idRep).paralelo}"`,
         read: false,
         fecha: peticion.fecha,
       }));
@@ -99,11 +107,29 @@ function MainApp() {
 
   const can = (gradeId, userId) => {
     let nota = getNotaGradeById(gradeId, userId);
-    return !(nota <= 6.99 && cuenta.intentos < 3);
+    let hecan = false;
+    if (
+      nota.notaEvaluacion >= 7 &&
+      nota.notaEvaluacion <= 8.99 &&
+      cuenta.intentosD < 3
+    ) {
+      hecan = true;
+    } else if (
+      nota.notaEvaluacion <= 6.99 &&
+      nota.notaEvaluacion >= 0.01 &&
+      cuenta.intentosI < 6
+    ) {
+      hecan = true;
+    }
+    return !hecan;
   };
 
   const handleConfirmImprovement = (tea) => {
-    cuenta.intentos++;
+    if (mejora == "Directa") {
+      cuenta.intentosD++;
+    } else {
+      cuenta.intentosI++;
+    }
     alert("Mejora confirmada, intento asignado.");
     setVisible(false);
     const nuevaPeticion = {
@@ -111,7 +137,9 @@ function MainApp() {
       idTea: tea.id,
       idRep: cuenta.id,
       fecha: new Date().toLocaleString(),
-      nota: getNotaGradeById(selectGrade.id, cuenta.id),
+      nota: getNotaGradeById(selectGrade.id, cuenta.id).notaEvaluacion,
+      estado: "Pendiente",
+      mejora: mejora,
     };
     addPeticion(nuevaPeticion);
     setPeticionesState(getPeticiones());
@@ -124,7 +152,8 @@ function MainApp() {
     setEditEmail(user.email);
     setEditRole(user.role);
     setEditMaterias(user.materias.join(", "));
-    setEditIntentos(user.intentos.toString());
+    setEditIntentosD(user.intentosD);
+    setEditIntentosI(user.intentosD);
     setAdminModalVisible(true);
   };
 
@@ -146,20 +175,31 @@ function MainApp() {
 
   const handleSaveAdminChanges = () => {
     if (!selectedUser) return;
+
+    // Convertir las materias de string a array de IDs
     const materiasArray = editMaterias
       .split(",")
-      .map((m) => parseInt(m.trim()))
-      .filter((m) => !isNaN(m));
+      .map((m) => parseInt(m.trim())) // Convertir cada ID a número
+      .filter((m) => !isNaN(m)); // Filtrar cualquier valor no numérico
+
+    // Crear el objeto actualizado con los nuevos valores
     const updatedUser = {
       ...selectedUser,
       nombreCompleto: editNombre,
       email: editEmail,
       role: editRole,
       materias: materiasArray,
-      intentos: parseInt(editIntentos),
+      intentosD: parseInt(editIntentosD),
+      intentosI: parseInt(editIntentosI), // Convertir los intentos a número
     };
+
+    // Actualizar el usuario en la base de datos
     updateUserInDatabase(updatedUser);
+
+    // Cerrar el modal de edición
     setAdminModalVisible(false);
+
+    // Mostrar una notificación de éxito
     alert("Usuario actualizado correctamente.");
   };
 
@@ -168,6 +208,25 @@ function MainApp() {
       deleteUserFromDatabase(userId);
       alert("Usuario eliminado.");
     }
+  };
+  const [selectedNotification, setSelectedNotification] = useState(null);
+  const [notificationModalVisible, setNotificationModalVisible] =
+    useState(false);
+  const handleNotificationClick = (notification) => {
+    setSelectedNotification(notification);
+    setNotificationModalVisible(true);
+  };
+  const handleAcceptNotification = () => {
+    if (selectedNotification) {
+      // Cambiar el estado de la petición a "Aceptada"
+      const updatedPeticiones = peticionesState.map((peticion) =>
+        peticion.id === selectedNotification.id
+          ? { ...peticion, estado: "Aceptada" }
+          : peticion
+      );
+      setPeticionesState(updatedPeticiones);
+    }
+    setNotificationModalVisible(false);
   };
 
   const users = getUsers();
@@ -178,6 +237,36 @@ function MainApp() {
 
   return (
     <div className="main-container">
+      <CModal
+        visible={notificationModalVisible}
+        onClose={() => setNotificationModalVisible(false)}
+      >
+        <CModalHeader closeButton>
+          <h5>Detalles de la notificación</h5>
+        </CModalHeader>
+        <CModalBody>
+          {selectedNotification ? (
+            <div>
+              <p>{selectedNotification.message}</p>
+              <p>Fecha: {selectedNotification.fecha}</p>
+            </div>
+          ) : (
+            <p>No hay detalles disponibles.</p>
+          )}
+        </CModalBody>
+        <CModalFooter>
+          <CButton
+            color="secondary"
+            onClick={() => setNotificationModalVisible(false)}
+          >
+            Cerrar notificación
+          </CButton>
+          <CButton color="primary" onClick={handleAcceptNotification}>
+            Aceptar
+          </CButton>
+        </CModalFooter>
+      </CModal>
+
       {/* Barra Superior */}
       <div className="top-bar">
         <h2 style={{ color: "white" }}>Sistema de Gestión Académica</h2>
@@ -193,7 +282,10 @@ function MainApp() {
               {notifications.map((notif) => (
                 <CDropdownItem
                   key={notif.id}
-                  onClick={() => markNotificationAsRead(notif.id)}
+                  onClick={() => {
+                    markNotificationAsRead(notif.id);
+                    handleNotificationClick(notif);
+                  }}
                 >
                   {notif.message}{" "}
                   {!notif.read && <CBadge color="info">Nuevo</CBadge>}
@@ -212,49 +304,71 @@ function MainApp() {
           {roleUser === "admin" ? (
             <CCol lg={12} md={12} sm={12}>
               <div className="admin-section">
-                <h3 className="mb-4">Panel de Administrador - Gestión de Usuarios</h3>
+                <h3 className="mb-4">
+                  Panel de Administrador - Gestión de Usuarios
+                </h3>
                 <CListGroup>
-                  {users.map((user) => (
-                    <CListGroupItem key={user.id} className="admin-item">
-                      <p>
-                        <strong>ID:</strong> {user.id}
-                      </p>
-                      <p>
-                        <strong>Nombre:</strong> {user.nombreCompleto}
-                      </p>
-                      <p>
-                        <strong>Email:</strong> {user.email}
-                      </p>
-                      <p>
-                        <strong>Rol:</strong> {user.role}
-                      </p>
-                      <p>
-                        <strong>Intentos:</strong> {user.intentos}
-                      </p>
-                      <CButton
-                        color="primary"
-                        onClick={() => handleEditUser(user)}
-                        className="m-1"
-                      >
-                        Editar
-                      </CButton>
-                      <CButton
-                        color="danger"
-                        onClick={() => handleDeleteUser(user.id)}
-                        className="m-1"
-                      >
-                        Eliminar
-                      </CButton>
-                    </CListGroupItem>
-                  ))}
+                  {users.map((user) => {
+                    // Filtrar las peticiones según el rol del usuario
+                    const peticionesRecibidas = getPeticiones().filter(
+                      (p) => p.idTea === user.id
+                    ).length; // Cantidad de peticiones para profesores
+
+                    return (
+                      <CListGroupItem key={user.id} className="admin-item">
+                        <p>
+                          <strong>ID:</strong> {user.id}
+                        </p>
+                        <p>
+                          <strong>Nombre:</strong> {user.nombreCompleto}
+                        </p>
+                        <p>
+                          <strong>Email:</strong> {user.email}
+                        </p>
+                        <p>
+                          <strong>Rol:</strong> {user.role}
+                        </p>
+
+                        {/* Si el usuario es Representante, mostrar sus intentos */}
+                        {user.role === "Representante" && (
+                          <>
+                            <p>
+                              <strong>Intentos de mejora indirecta:</strong>{" "}
+                              {user.intentosI}
+                            </p>
+                            <p>
+                              <strong>Intentos de mejora directa:</strong>{" "}
+                              {user.intentosD}
+                            </p>
+                          </>
+                        )}
+
+                        {/* Si el usuario es Profesor, mostrar la cantidad de peticiones recibidas */}
+                        {user.role === "Profesor" && (
+                          <p>
+                            <strong>Peticiones recibidas:</strong>{" "}
+                            {peticionesRecibidas}
+                          </p>
+                        )}
+
+                        <CButton
+                          color="primary"
+                          onClick={() => handleEditUser(user)}
+                          className="m-1"
+                        >
+                          Editar
+                        </CButton>
+                        <CButton
+                          color="danger"
+                          onClick={() => handleDeleteUser(user.id)}
+                          className="m-1"
+                        >
+                          Eliminar
+                        </CButton>
+                      </CListGroupItem>
+                    );
+                  })}
                 </CListGroup>
-                <CButton
-                  color="secondary"
-                  className="mt-3"
-                  onClick={() => setReportModalVisible(true)}
-                >
-                  Ver Reportes
-                </CButton>
               </div>
             </CCol>
           ) : roleUser === "Representante" ? (
@@ -269,17 +383,49 @@ function MainApp() {
                         <div className="materia-info">
                           <strong>{materia.nombre}</strong>
                           <p>Docente/s: {teaGradeById(materia.id)}</p>
-                          <p>Nota: {getNotaGradeById(materia.id, cuenta.id)}</p>
+                          <p>
+                            Nota Evaluación:{" "}
+                            {
+                              getNotaGradeById(materia.id, cuenta.id)
+                                .notaEvaluacion
+                            }
+                          </p>
+                          <p>
+                            Nota Final:{" "}
+                            {getNotaGradeById(materia.id, cuenta.id).notaFinal}
+                          </p>
                         </div>
                         <CButton
                           color="primary"
                           onClick={() => {
-                            if (cuenta.intentos < 3) {
+                            let notaEva = getNotaGradeById(
+                              materia.id,
+                              cuenta.id
+                            ).notaEvaluacion;
+                            if (
+                              cuenta.intentosD < 3 &&
+                              notaEva >= 7 &&
+                              notaEva < 9
+                            ) {
+                              setMejora("Directa");
                               setVisible(true);
                               setSelectGrade(materia);
-                            } else {
+                            } else if (cuenta.intentosD > 3) {
                               alert(
-                                "Has alcanzado el límite de intentos para solicitar mejoras."
+                                "Has alcanzado el límite de intentos para solicitar mejoras directas."
+                              );
+                            }
+                            if (
+                              cuenta.intentosI < 6 &&
+                              notaEva >= 0.01 &&
+                              notaEva <= 6.99
+                            ) {
+                              setMejora("Indirecta");
+                              setVisible(true);
+                              setSelectGrade(materia);
+                            } else if (cuenta.intentosI > 6) {
+                              alert(
+                                "Has alcanzado el límite de intentos para solicitar mejoras indirectas."
                               );
                             }
                           }}
@@ -317,7 +463,12 @@ function MainApp() {
                       <strong>Jornada:</strong> {cuenta.jornada}
                     </p>
                     <p>
-                      <strong>Intentos usados:</strong> {cuenta.intentos} de 3
+                      <strong>Intentos de mejoras directas usados:</strong>{" "}
+                      {cuenta.intentosD} de 3
+                    </p>
+                    <p>
+                      <strong>Intentos de mejoras indirectas usados:</strong>{" "}
+                      {cuenta.intentosI} de 6
                     </p>
                   </div>
                 </div>
@@ -334,7 +485,10 @@ function MainApp() {
                       <CListGroupItem key={materia.id} className="materia-item">
                         <div className="materia-info">
                           <strong>{materia.nombre}</strong>
-                          <p>Estudiantes Registrados: {usersInGradeById(materia.id)}</p>
+                          <p>
+                            Estudiantes Registrados:{" "}
+                            {usersInGradeById(materia.id)}
+                          </p>
                           <p>Recuperaciones:</p>
                           <p>Promedio General:</p>
                         </div>
@@ -382,6 +536,7 @@ function MainApp() {
                   teacher={findUserById(
                     getNotaEditGradeById(selectGrade.id, cuenta.id)
                   )}
+                  mejora={mejora}
                 />
               }
               fileName="Solicitud_Mejora.pdf"
@@ -471,11 +626,17 @@ function MainApp() {
               value={editMaterias}
               onChange={(e) => setEditMaterias(e.target.value)}
             />
-            <CFormLabel>Intentos</CFormLabel>
+            <CFormLabel>Intentos Indirectos</CFormLabel>
             <CFormInput
               type="number"
-              value={editIntentos}
-              onChange={(e) => setEditIntentos(e.target.value)}
+              value={editIntentosI}
+              onChange={(e) => setEditIntentosI(e.target.value)}
+            />
+            <CFormLabel>Intentos Directos</CFormLabel>
+            <CFormInput
+              type="number"
+              value={editIntentosD}
+              onChange={(e) => setEditIntentosD(e.target.value)}
             />
           </CModalBody>
           <CModalFooter>
@@ -530,7 +691,10 @@ function MainApp() {
                         <strong>Fecha:</strong> {p.fecha}
                       </p>
                       <p>
-                        <strong>Nota Solicitada:</strong> {p.nota}
+                        <strong>Nota :</strong> {p.nota}
+                      </p>
+                      <p>
+                        <strong>Mejora </strong> {p.mejora}
                       </p>
                     </CListGroupItem>
                   );

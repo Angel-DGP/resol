@@ -15,8 +15,9 @@ const RegisterModal = ({ show, handleClose }) => {
     paralelo: "",
     jornada: "",
     materias: [], // Ahora guardará solo IDs
-    notas: [],
-    intentos: 0,
+    notas: [], // Aquí se guardan las notas
+    intentosI: 0,
+    intentosD: 0,
   });
 
   const materiasList = [
@@ -41,10 +42,31 @@ const RegisterModal = ({ show, handleClose }) => {
         ? formData.materias.filter((id) => id !== selectedId)
         : [...formData.materias, selectedId];
 
-      setFormData((prevData) => ({
-        ...prevData,
-        materias: selectedMaterias, // Solo guarda IDs
-      }));
+      // Actualizamos las materias en formData
+      setFormData((prevData) => {
+        // Agregar las nuevas notas correspondientes a las materias seleccionadas
+        const newNotas = selectedMaterias
+          .map((materiaId) => {
+            if (!prevData.materias.includes(materiaId)) {
+              return {
+                id: materiaId,
+                notaClase: "No ingresado",
+                notaEvaluacion: "No ingresado",
+                notaProyecto: "No ingresado",
+                notaFinal: "No ingresado",
+                edit: 0,
+              };
+            }
+            return null; // Si ya existe, no agregar nada
+          })
+          .filter(Boolean); // Filtra los valores nulos
+
+        return {
+          ...prevData,
+          materias: selectedMaterias,
+          notas: [...prevData.notas, ...newNotas], // Añadir las nuevas notas
+        };
+      });
     } else {
       setFormData((prevData) => ({
         ...prevData,

@@ -11,14 +11,22 @@ import {
 
 const ModalIngresoNotas = ({ isOpen, onClose, users, grades, profesorId }) => {
   const [materiaSeleccionada, setMateriaSeleccionada] = useState("");
-  const [nota, setNota] = useState("");
   const [estudianteSeleccionado, setEstudianteSeleccionado] = useState("");
+  const [notaClase, setNotaClase] = useState("");
+  const [notaEvaluacion, setNotaEvaluacion] = useState("");
+  const [notaProyecto, setNotaProyecto] = useState("");
 
-  // Buscamos al profesor para extraer las materias que enseña
+  // Calculamos la nota final en tiempo real
+  const calcularNotaFinal = () => {
+    const clase = parseFloat(notaClase) || 0;
+    const evaluacion = parseFloat(notaEvaluacion) || 0;
+    const proyecto = parseFloat(notaProyecto) || 0;
+    return (clase * 0.7 + evaluacion * 0.2 + proyecto * 0.1).toFixed(2);
+  };
+
   const profesor = users.find((user) => user.id === profesorId);
   const materiasProfesor = profesor ? profesor.materias : [];
 
-  // Filtramos a los estudiantes (usuarios de rol "Representante") que están inscritos en la materia seleccionada
   const estudiantes = users.filter(
     (user) =>
       user.role === "Representante" &&
@@ -26,49 +34,73 @@ const ModalIngresoNotas = ({ isOpen, onClose, users, grades, profesorId }) => {
   );
 
   const handleGuardarNota = () => {
-    if (!materiaSeleccionada || !estudianteSeleccionado || !nota) {
+    if (
+      !materiaSeleccionada ||
+      !estudianteSeleccionado ||
+      !notaClase ||
+      !notaEvaluacion ||
+      !notaProyecto
+    ) {
       alert("Por favor, complete todos los campos");
       return;
     }
-    // Buscamos al estudiante en la lista de usuarios
+    if (
+      notaClase < 0 ||
+      notaClase > 10 ||
+      notaEvaluacion < 0 ||
+      notaEvaluacion > 10 ||
+      notaProyecto < 0 ||
+      notaProyecto > 10
+    ) {
+      alert("Por favor, ingrese notas entre los valores 0-10");
+      return;
+    }
+
     const estudianteIndex = users.findIndex(
       (user) => user.id === Number(estudianteSeleccionado)
     );
     if (estudianteIndex !== -1) {
       const estudiante = users[estudianteIndex];
-      // Buscamos si ya existe una nota para la materia seleccionada
       const notaExistenteIndex = estudiante.notas.findIndex(
         (n) => n.id === Number(materiaSeleccionada)
       );
+      const notaFinal = calcularNotaFinal();
+
       if (notaExistenteIndex !== -1) {
-        // Actualizamos la nota existente e indicamos quién la editó
         estudiante.notas[notaExistenteIndex] = {
           ...estudiante.notas[notaExistenteIndex],
-          nota: parseFloat(nota),
-          edit: profesorId, // Se guarda el id del profesor que edita la nota
+          notaClase: parseFloat(notaClase),
+          notaEvaluacion: parseFloat(notaEvaluacion),
+          notaProyecto: parseFloat(notaProyecto),
+          notaFinal: parseFloat(notaFinal),
+          edit: profesorId,
         };
-        alert("Nota actualizada correctamente");
+        alert("Notas actualizadas correctamente");
       } else {
-        // Si no existe, se agrega una nueva entrada incluyendo el editor
         estudiante.notas.push({
           id: Number(materiaSeleccionada),
-          nota: parseFloat(nota),
-          edit: profesorId, // Se guarda el id del profesor que puso la nota
+          notaClase: parseFloat(notaClase),
+          notaEvaluacion: parseFloat(notaEvaluacion),
+          notaProyecto: parseFloat(notaProyecto),
+          notaFinal: parseFloat(notaFinal),
+          edit: profesorId,
         });
-        alert("Nota guardada correctamente");
+        alert("Notas guardadas correctamente");
       }
       console.log(estudiante.notas);
     }
-    // Reiniciamos los estados y cerramos el modal
+
     setMateriaSeleccionada("");
-    setNota("");
+    setNotaClase("");
+    setNotaEvaluacion("");
+    setNotaProyecto("");
     setEstudianteSeleccionado("");
     onClose();
   };
 
   return (
     <CModal visible={isOpen} onClose={onClose}>
-      <CModalHeader>Ingresar Nota</CModalHeader>
+      <CModalHeader>Ingresar Notas</CModalHeader>
       <CModalBody>
         <label>Materia</label>
         <CFormSelect
@@ -99,16 +131,34 @@ const ModalIngresoNotas = ({ isOpen, onClose, users, grades, profesorId }) => {
           ))}
         </CFormSelect>
 
-        <label className="mt-2">Nota</label>
+        <label className="mt-2">Nota de Actividades en Clase</label>
         <CFormInput
           type="number"
-          value={nota}
-          onChange={(e) => setNota(e.target.value)}
+          value={notaClase}
+          onChange={(e) => setNotaClase(e.target.value)}
         />
+
+        <label className="mt-2">Nota de Evaluación</label>
+        <CFormInput
+          type="number"
+          value={notaEvaluacion}
+          onChange={(e) => setNotaEvaluacion(e.target.value)}
+        />
+
+        <label className="mt-2">Nota de Proyecto</label>
+        <CFormInput
+          type="number"
+          value={notaProyecto}
+          onChange={(e) => setNotaProyecto(e.target.value)}
+        />
+
+        <label className="mt-3 fw-bold">
+          Nota Final: {calcularNotaFinal()}
+        </label>
       </CModalBody>
       <CModalFooter>
         <CButton color="primary" onClick={handleGuardarNota}>
-          Guardar Nota
+          Guardar Notas
         </CButton>
         <CButton color="secondary" onClick={onClose}>
           Cancelar

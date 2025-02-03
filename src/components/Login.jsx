@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import { CButton, CCol, CContainer, CFormInput, CRow } from "@coreui/react";
 import "./Login.css"; // Importa los estilos
 import RegisterModal from "./RegisterModal";
-import { Button } from "react-bootstrap";
 import { getUsers, setIdUser } from "./database";
 let users = getUsers();
 console.log(users);

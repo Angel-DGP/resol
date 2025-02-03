@@ -13,7 +13,8 @@ let users = [
     materias: [1],
     role: "Profesor",
     notas: [],
-    intentos: 0,
+    intentosI: 0,
+    intentosD: 0,
   },
   {
     id: 2,
@@ -28,17 +29,81 @@ let users = [
     materias: [1, 2, 3, 4, 5, 6, 7, 8, 9],
     role: "Representante",
     notas: [
-      { id: 1, nota: "No ingresado", edit: 0 },
-      { id: 2, nota: "No ingresado", edit: 0 },
-      { id: 3, nota: "No ingresado", edit: 0 },
-      { id: 4, nota: "No ingresado", edit: 0 },
-      { id: 5, nota: "No ingresado", edit: 0 },
-      { id: 6, nota: "No ingresado", edit: 0 },
-      { id: 7, nota: "No ingresado", edit: 0 },
-      { id: 8, nota: "No ingresado", edit: 0 },
-      { id: 9, nota: "No ingresado", edit: 0 },
+      {
+        id: 1,
+        notaClase: "No ingresado",
+        notaEvaluacion: "No ingresado",
+        notaProyecto: "No ingresado",
+        notaFinal: "No ingresado",
+        edit: 0,
+      },
+      {
+        id: 2,
+        notaClase: "No ingresado",
+        notaEvaluacion: "No ingresado",
+        notaProyecto: "No ingresado",
+        notaFinal: "No ingresado",
+        edit: 0,
+      },
+      {
+        id: 3,
+        notaClase: "No ingresado",
+        notaEvaluacion: "No ingresado",
+        notaProyecto: "No ingresado",
+        notaFinal: "No ingresado",
+        edit: 0,
+      },
+      {
+        id: 4,
+        notaClase: "No ingresado",
+        notaEvaluacion: "No ingresado",
+        notaProyecto: "No ingresado",
+        notaFinal: "No ingresado",
+        edit: 0,
+      },
+      {
+        id: 5,
+        notaClase: "No ingresado",
+        notaEvaluacion: "No ingresado",
+        notaProyecto: "No ingresado",
+        notaFinal: "No ingresado",
+        edit: 0,
+      },
+      {
+        id: 6,
+        notaClase: "No ingresado",
+        notaEvaluacion: "No ingresado",
+        notaProyecto: "No ingresado",
+        notaFinal: "No ingresado",
+        edit: 0,
+      },
+      {
+        id: 7,
+        notaClase: "No ingresado",
+        notaEvaluacion: "No ingresado",
+        notaProyecto: "No ingresado",
+        notaFinal: "No ingresado",
+        edit: 0,
+      },
+      {
+        id: 8,
+        notaClase: "No ingresado",
+        notaEvaluacion: "No ingresado",
+        notaProyecto: "No ingresado",
+        notaFinal: "No ingresado",
+        edit: 0,
+      },
+      {
+        id: 9,
+        notaClase: "No ingresado",
+        notaEvaluacion: "No ingresado",
+        notaProyecto: "No ingresado",
+        notaFinal: "No ingresado",
+        edit: 0,
+      },
     ],
-    intentos: 0,
+    intentosI: 0,
+    intentosD: 0,
   },
   {
     id: 3,
@@ -53,7 +118,8 @@ let users = [
     materias: [],
     role: "admin",
     notas: [],
-    intentos: 0,
+    intentosI: 0,
+    intentosD: 0,
   },
   {
     id: 4,
@@ -68,7 +134,97 @@ let users = [
     materias: [1],
     role: "Profesor",
     notas: [],
-    intentos: 0,
+    intentosI: 0,
+    intentosD: 0,
+  },
+  {
+    id: 4,
+    email: "res@res.com",
+    password: "res",
+    representanteNombre: "Arruay Rer Saer",
+    representanteCedula: "1234567890",
+    nombreCompleto: "Eser Acar Rer",
+    grado: "3ro Ciencias",
+    paralelo: "A",
+    jornada: "Vespertina",
+    materias: [],
+    role: "Representante",
+    notas: [
+      {
+        id: 1,
+        notaClase: "No ingresado",
+        notaEvaluacion: "No ingresado",
+        notaProyecto: "No ingresado",
+        notaFinal: "No ingresado",
+        edit: 0,
+      },
+      {
+        id: 2,
+        notaClase: "No ingresado",
+        notaEvaluacion: "No ingresado",
+        notaProyecto: "No ingresado",
+        notaFinal: "No ingresado",
+        edit: 0,
+      },
+      {
+        id: 3,
+        notaClase: "No ingresado",
+        notaEvaluacion: "No ingresado",
+        notaProyecto: "No ingresado",
+        notaFinal: "No ingresado",
+        edit: 0,
+      },
+      {
+        id: 4,
+        notaClase: "No ingresado",
+        notaEvaluacion: "No ingresado",
+        notaProyecto: "No ingresado",
+        notaFinal: "No ingresado",
+        edit: 0,
+      },
+      {
+        id: 5,
+        notaClase: "No ingresado",
+        notaEvaluacion: "No ingresado",
+        notaProyecto: "No ingresado",
+        notaFinal: "No ingresado",
+        edit: 0,
+      },
+      {
+        id: 6,
+        notaClase: "No ingresado",
+        notaEvaluacion: "No ingresado",
+        notaProyecto: "No ingresado",
+        notaFinal: "No ingresado",
+        edit: 0,
+      },
+      {
+        id: 7,
+        notaClase: "No ingresado",
+        notaEvaluacion: "No ingresado",
+        notaProyecto: "No ingresado",
+        notaFinal: "No ingresado",
+        edit: 0,
+      },
+      {
+        id: 8,
+        notaClase: "No ingresado",
+        notaEvaluacion: "No ingresado",
+        notaProyecto: "No ingresado",
+        notaFinal: "No ingresado",
+        edit: 0,
+      },
+      {
+        id: 9,
+        notaClase: "No ingresado",
+        notaEvaluacion: "No ingresado",
+        notaProyecto: "No ingresado",
+        notaFinal: "No ingresado",
+        edit: 0,
+      },
+    ],
+    intentosI: 0,
+    intentosD: 0,
   },
 ];
 
@@ -88,9 +244,26 @@ let grades = [
 // Array de peticiones (solicitudes de mejora)
 // Cada petición registra: id, idM (materia), idTea (profesor que ingresa la nota), idRep (representante que solicita la mejora), fecha y nota (solicitada)
 let peticiones = [
-  { id: 1, idM: 1, idTea: 1, idRep: 2, fecha: "2023-01-01 10:00", nota: 5.5 },
-  { id: 2, idM: 2, idTea: 4, idRep: 2, fecha: "2023-01-02 11:00", nota: 6.0 },
-  { id: 3, idM: 3, idTea: 1, idRep: 2, fecha: "2023-01-03 12:00", nota: 4.5 },
+  {
+    id: 1,
+    idM: 1,
+    idTea: 1,
+    idRep: 2,
+    fecha: "2023-01-01 10:00",
+    nota: 5.5,
+    mejora: "Indirecta",
+    estado: "Pendiente",
+  },
+  {
+    id: 2,
+    idM: 1,
+    idTea: 1,
+    idRep: 3,
+    fecha: "2023-01-01 10:00",
+    nota: 7.5,
+    mejora: "Directa",
+    estado: "Pendiente",
+  },
 ];
 
 let userLogin = 0;
@@ -98,6 +271,15 @@ let userLogin = 0;
 // Funciones auxiliares
 
 export const getPeticiones = () => peticiones;
+export const getPeticionesById = (id) => {
+  let pet = [];
+  for (let i = 0; i < peticiones.length; i++) {
+    if (peticiones[i].idTea === id || peticiones[i].idRep === id) {
+      pet.push(peticiones[i]);
+    }
+  }
+  return pet;
+};
 
 export const addPeticion = (peticion) => {
   peticion.id = peticiones.length + 1;
@@ -156,7 +338,7 @@ export const getNotaGradeById = (idGrade, idU) => {
   let user = findUserById(idU);
   if (!user) return null;
   let notaObj = user.notas.find((n) => n.id === idGrade);
-  return notaObj ? notaObj.nota : null;
+  return notaObj ? notaObj : null;
 };
 
 export const getNotaEditGradeById = (idGrade, idU) => {

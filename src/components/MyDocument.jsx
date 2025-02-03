@@ -10,7 +10,7 @@ import {
 import hd from "../assets/images/header.png";
 import ft from "../assets/images/feat.png";
 import table from "../assets/images/table.png";
-const MyDocument = ({ dataUser, grade, teacher }) => {
+const MyDocument = ({ dataUser, grade, teacher, mejora }) => {
   const styles = StyleSheet.create({
     page: {
       flexDirection: "column",
@@ -85,7 +85,7 @@ const MyDocument = ({ dataUser, grade, teacher }) => {
               fontWeight: "extrabold",
             }}
           >
-            SOLICTUD PARA MEJORA DIRECTA DE CALIFICACIÓN
+            SOLICTUD PARA MEJORA {mejora.toUpperCase()} DE CALIFICACIÓN
           </Text>
           <Text
             style={{
@@ -94,7 +94,9 @@ const MyDocument = ({ dataUser, grade, teacher }) => {
               textAlign: "center",
             }}
           >
-            (entre 0,01 - 6,99 puntos)
+            {mejora.includes("Indirecta")
+              ? "(entre 0,01 - 6,99 puntos)" // Si incluye 'mejora'
+              : "(entre 7,00 - 9,00 puntos)"}
           </Text>
           <Text style={{ textAlign: "right", fontSize: 11 }}>
             {"\n"}
@@ -115,10 +117,10 @@ const MyDocument = ({ dataUser, grade, teacher }) => {
             Yo, {dataUser.representanteNombre} con cédula de identidad N°{" "}
             {dataUser.representanteCedula}, en mi calidad de representante legal
             de {dataUser.nombreCompleto}, estudiante del {dataUser.grado}{" "}
-            paralelo "{dataUser.paralelo}" de la jornada {dataUser.jornada}; en
-            virtud del bajo rendimiento de mi representado/a, SOLICITO muy
-            comedidamente se realice el proceso de refuerzo pedagógico que Ud.
-            determine con el propósito de mejorar su desempeño académico.{"\n"}
+            paralelo "{dataUser.paralelo}" de la jornada {dataUser.jornada}
+            {mejora.includes("Indirecta")
+              ? "; en virtud del bajo rendimiento de mi representado/a, \n SOLICITO muy comedidamente se realice el proceso de refuerzo pedagógico que Ud. determine con el propósito de mejorar su desempeño académico.\n "
+              : ". \n"}
             {"\n"} En tal virtud, le expreso mi compromiso de colaborar con las
             estrategias implementadas para dicho propósito, quedando en espera
             de las fechas y horario que se establezca.{"\n"}
