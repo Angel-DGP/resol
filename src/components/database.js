@@ -348,4 +348,12 @@ export const getNotaEditGradeById = (idGrade, idU) => {
   return notaObj ? notaObj.edit : null;
 };
 
+export const setStatePeticion = (idP, estadoN) => {
+  for (let i = 0; i < peticiones.length; i++) {
+    if (peticiones[i].id === idP) {
+      peticiones[i].estado = estadoN;
+    }
+  }
+};
+
 export { grades };

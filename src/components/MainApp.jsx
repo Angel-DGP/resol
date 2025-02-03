@@ -35,6 +35,7 @@ import {
   getPeticiones,
   addPeticion,
   getPeticionesById,
+  setStatePeticion,
 } from "./database";
 
 // Modal de ingreso de notas (vista del Profesor)
@@ -62,6 +63,52 @@ function MainApp() {
 
   let cuenta = findUserById(getIdUser());
   let roleUser = cuenta.role;
+  const leido = (pet) => {
+    if (pet.estado === "Aceptada") {
+      return true;
+    } else {
+      return false;
+    }
+  };
+  const msg = (pet) => {
+    if (roleUser === "Profesor") {
+      return `Nueva solicitud de mejora en ${
+        getGradeById(pet.idM).nombre
+      } por el representante del estudiante ${
+        findUserById(pet.idRep).nombreCompleto
+      } del ${findUserById(pet.idRep).grado} "${
+        findUserById(pet.idRep).paralelo
+      }"`;
+    } else if (roleUser === "admin") {
+      return `Nueva solicitud de mejora realizada de la materia de${
+        getGradeById(pet.idM).nombre
+      } por ${findUserById(pet.idRep).nombreCompleto} del ${
+        findUserById(pet.idRep).grado
+      } "${findUserById(pet.idRep).paralelo}" hacia el profesor ${
+        findUserById(pet.idTea).nombreCompleto
+      } `;
+    } else if (roleUser === "Representante") {
+      if (pet.estado === "Aceptada") {
+        return `Solicitud aceptada de mejora ${
+          pet.mejora
+        } de calfificación de la materia de ${
+          getGradeById(pet.idM).nombre
+        } por la nota ${pet.nota} en la evaluación del ${
+          findUserById(pet.idRep).grado
+        } "${findUserById(pet.idRep).paralelo}" hacia el profesor ${
+          findUserById(pet.idTea).nombreCompleto
+        } `;
+      } else {
+        return `Solicitud enviada de mejora ${pet.mejora} de la materia de ${
+          getGradeById(pet.idM).nombre
+        } por la nota ${pet.nota} en la evaluación del ${
+          findUserById(pet.idRep).grado
+        } "${findUserById(pet.idRep).paralelo}" hacia el profesor ${
+          findUserById(pet.idTea).nombreCompleto
+        } `;
+      }
+    }
+  };
 
   // Cargar notificaciones al iniciar
   useEffect(() => {
@@ -70,13 +117,10 @@ function MainApp() {
       console.log(peticiones);
       const nuevasNotificaciones = peticiones.map((peticion) => ({
         id: peticion.id,
-        message: `Nueva solicitud de mejora en ${
-          getGradeById(peticion.idM).nombre
-        } por ${findUserById(peticion.idRep).nombreCompleto} del ${
-          findUserById(peticion.idRep).grado
-        } "${findUserById(peticion.idRep).paralelo}"`,
-        read: false,
+        message: msg(peticion),
+        read: leido(peticion),
         fecha: peticion.fecha,
+        estado: peticion.estado,
       }));
       setNotifications(nuevasNotificaciones);
     };
@@ -125,7 +169,7 @@ function MainApp() {
   };
 
   const handleConfirmImprovement = (tea) => {
-    if (mejora == "Directa") {
+    if (mejora === "Directa") {
       cuenta.intentosD++;
     } else {
       cuenta.intentosI++;
@@ -198,7 +242,6 @@ function MainApp() {
 
     // Cerrar el modal de edición
     setAdminModalVisible(false);
-
     // Mostrar una notificación de éxito
     alert("Usuario actualizado correctamente.");
   };
@@ -219,12 +262,11 @@ function MainApp() {
   const handleAcceptNotification = () => {
     if (selectedNotification) {
       // Cambiar el estado de la petición a "Aceptada"
-      const updatedPeticiones = peticionesState.map((peticion) =>
-        peticion.id === selectedNotification.id
-          ? { ...peticion, estado: "Aceptada" }
-          : peticion
-      );
+      const updatedPeticiones = peticionesState.map(() => {
+        setStatePeticion(selectedNotification.id, "Aceptada");
+      });
       setPeticionesState(updatedPeticiones);
+      console.log(getPeticiones());
     }
     setNotificationModalVisible(false);
   };
@@ -249,6 +291,7 @@ function MainApp() {
             <div>
               <p>{selectedNotification.message}</p>
               <p>Fecha: {selectedNotification.fecha}</p>
+              <p>Estado: {selectedNotification.estado}</p>
             </div>
           ) : (
             <p>No hay detalles disponibles.</p>
@@ -261,9 +304,11 @@ function MainApp() {
           >
             Cerrar notificación
           </CButton>
-          <CButton color="primary" onClick={handleAcceptNotification}>
-            Aceptar
-          </CButton>
+          {cuenta.role === "Profesor" && (
+            <CButton color="primary" onClick={handleAcceptNotification}>
+              Aceptar
+            </CButton>
+          )}
         </CModalFooter>
       </CModal>
 
@@ -583,7 +628,7 @@ function MainApp() {
         </CModal>
       )}
 
-      {/* Modal de ingreso de notas (vista del Profesor) */}
+      {/* Modal de ingreso de notas (vista 1 del Profesor) */}
       {roleUser === "Profesor" && (
         <ModalIngresoNotas
           isOpen={visibleNoteModal}
