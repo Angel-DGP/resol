@@ -15,6 +15,8 @@ const ModalIngresoNotas = ({ isOpen, onClose, users, grades, profesorId }) => {
   const [notaClase, setNotaClase] = useState("");
   const [notaEvaluacion, setNotaEvaluacion] = useState("");
   const [notaProyecto, setNotaProyecto] = useState("");
+  const [gradoSeleccionado, setGradoSeleccionado] = useState("");
+  const [paraleloSeleccionado, setParaleloSeleccionado] = useState("");
 
   // Calculamos la nota final en tiempo real
   const calcularNotaFinal = () => {
@@ -30,7 +32,9 @@ const ModalIngresoNotas = ({ isOpen, onClose, users, grades, profesorId }) => {
   const estudiantes = users.filter(
     (user) =>
       user.role === "Representante" &&
-      user.materias.includes(Number(materiaSeleccionada))
+      user.materias.includes(Number(materiaSeleccionada)) &&
+      user.grado === gradoSeleccionado && // Filtra por grado
+      user.paralelo === paraleloSeleccionado // Filtra por paralelo
   );
 
   const handleGuardarNota = () => {
@@ -118,6 +122,35 @@ const ModalIngresoNotas = ({ isOpen, onClose, users, grades, profesorId }) => {
           })}
         </CFormSelect>
 
+        <label className="mt-2">Grado</label>
+        <CFormSelect
+          value={gradoSeleccionado}
+          onChange={(e) => setGradoSeleccionado(e.target.value)}
+        >
+          <option value="">Seleccione un grado</option>
+          {[...new Set(users.map((user) => user.grado).filter(Boolean))].map(
+            (grado) => (
+              <option key={grado} value={grado}>
+                {grado}
+              </option>
+            )
+          )}
+        </CFormSelect>
+
+        <label className="mt-2">Paralelo</label>
+        <CFormSelect
+          value={paraleloSeleccionado}
+          onChange={(e) => setParaleloSeleccionado(e.target.value)}
+        >
+          <option value="">Seleccione un paralelo</option>
+          {[...new Set(users.map((user) => user.paralelo).filter(Boolean))].map(
+            (paralelo) => (
+              <option key={paralelo} value={paralelo}>
+                {paralelo}
+              </option>
+            )
+          )}
+        </CFormSelect>
         <label className="mt-2">Estudiante</label>
         <CFormSelect
           value={estudianteSeleccionado}
@@ -130,7 +163,6 @@ const ModalIngresoNotas = ({ isOpen, onClose, users, grades, profesorId }) => {
             </option>
           ))}
         </CFormSelect>
-
         <label className="mt-2">Nota de Actividades en Clase</label>
         <CFormInput
           type="number"
