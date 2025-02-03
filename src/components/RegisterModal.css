@@ -1,25 +1,50 @@
 .modal-dark .modal-content {
-    background-color: #343a40 !important; /* Fondo oscuro */
-    color: white !important; /* Texto blanco */
-    border: none;
-  }
-  
-  .modal-dark .form-control {
-    background-color: #495057;
-    color: white;
-    border: 1px solid #6c757d;
-  }
-  
-  .modal-dark .form-control::placeholder {
-    color: #adb5bd;
-  }
-  
-  .modal-dark .btn-primary {
-    background-color: #007bff;
-    border: none;
-  }
-  
-  .modal-dark .btn-secondary {
-    background-color: #6c757d;
-  }
+  background-color: #ffffff !important; /* Fondo blanco */
+  color: #000000 !important; /* Texto negro */
+  border: none;
+  border-radius: 12px; /* Bordes redondeados */
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); /* Sombra más pronunciada */
+}
+
+.modal-dark .form-control {
+  background-color: #ffffff; /* Fondo blanco */
+  color: #000000; /* Texto negro */
+  border: 1px solid #ced4da; /* Borde gris */
+  border-radius: 8px; /* Bordes redondeados */
+  padding: 10px; /* Espaciado interno */
+  margin-bottom: 15px; /* Espaciado entre inputs */
+}
+
+.modal-dark .form-control::placeholder {
+  color: #6c757d; /* Placeholder gris */
+  opacity: 1; /* Sin opacidad */
+}
+
+.modal-dark .btn-primary {
+  background-color: #007bff; /* Color azul */
+  border: none; /* Sin borde */
+  border-radius: 8px; /* Bordes redondeados */
+  padding: 10px; /* Espaciado interno */
+  font-weight: 500; /* Texto en negrita */
+  width: 100%; /* Ancho completo */
+  margin-top: 10px; /* Espaciado superior */
+}
+
+.modal-dark .btn-primary:hover {
+  background-color: #0056b3; /* Color azul más oscuro al pasar el mouse */
+}
+
+.modal-dark .btn-secondary {
+  background-color: #6c757d; /* Color gris */
+  border: none; /* Sin borde */
+  border-radius: 8px; /* Bordes redondeados */
+  padding: 10px; /* Espaciado interno */
+  font-weight: 500; /* Texto en negrita */
+  width: 100%; /* Ancho completo */
+  margin-top: 10px; /* Espaciado superior */
+}
+
+.modal-dark .btn-secondary:hover {
+  background-color: #5a6268; /* Color gris más oscuro al pasar el mouse */
+}
   

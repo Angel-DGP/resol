@@ -36,7 +36,7 @@ function Login() {
         <CRow className="justify-content-center">
           <CCol>
             <div className="login-box">
-              <h2 className="text-center mb-4" style={{ color: "white" }}>
+              <h2 className="text-center mb-4" style={{ color: "black" }}>
                 Inicia Sesión
               </h2>
               <CFormInput
@@ -78,7 +78,7 @@ function Login() {
                   handleClose={handleClose}
                   className="w-100"
                 />
-                <p style={{ color: "white", textAlign: "center" }}>
+                <p style={{ color: "black", textAlign: "center" }}>
                   No tienes cuenta?{" "}
                   <a onClick={handleShow} href="#">
                     Crea una cuenta

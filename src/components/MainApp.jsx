@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   CContainer,
   CRow,
@@ -12,6 +12,11 @@ import {
   CModalFooter,
   CFormInput,
   CFormLabel,
+  CDropdown,
+  CDropdownToggle,
+  CDropdownMenu,
+  CDropdownItem,
+  CBadge,
 } from "@coreui/react";
 import "./MainApp.css";
 import { useNavigate } from "react-router-dom";
@@ -36,33 +41,40 @@ import ModalIngresoNotas from "./ModalIngresoNotas";
 
 function MainApp() {
   const navigate = useNavigate();
-  // Estados para los modales
-  const [visible, setVisible] = useState(false); // Modal PDF para representantes
-  const [visibleNoteModal, setVisibleNoteModal] = useState(false); // Modal de ingreso de notas (Profesor)
-  const [adminModalVisible, setAdminModalVisible] = useState(false); // Modal para editar usuario (Admin)
-  const [reportModalVisible, setReportModalVisible] = useState(false); // Modal para ver reportes (Admin)
+  const [visible, setVisible] = useState(false);
+  const [visibleNoteModal, setVisibleNoteModal] = useState(false);
+  const [adminModalVisible, setAdminModalVisible] = useState(false);
+  const [reportModalVisible, setReportModalVisible] = useState(false);
   const [selectGrade, setSelectGrade] = useState(0);
-
-  // Estado para forzar re-render (para usuarios, peticiones, etc.)
   const [refresh, setRefresh] = useState(false);
-  // Estado para las peticiones, inicializado con el arreglo actual de peticiones
   const [peticionesState, setPeticionesState] = useState(getPeticiones());
-
-  // Estados para edición de usuario (admin)
   const [selectedUser, setSelectedUser] = useState(null);
   const [editNombre, setEditNombre] = useState("");
   const [editEmail, setEditEmail] = useState("");
   const [editRole, setEditRole] = useState("");
   const [editMaterias, setEditMaterias] = useState("");
   const [editIntentos, setEditIntentos] = useState("");
-
-  // Usuario actual
-  let cuenta = findUserById(getIdUser());
-  let roleUser = cuenta.role; // "Representante", "Profesor" o "admin"
-  console.log(cuenta.id + " - " + roleUser);
-
-  // Funciones para Representante
   const [selectedFile, setSelectedFile] = useState(null);
+  const [notifications, setNotifications] = useState([]);
+
+  let cuenta = findUserById(getIdUser());
+  let roleUser = cuenta.role;
+
+  // Cargar notificaciones al iniciar
+  useEffect(() => {
+    const loadNotifications = () => {
+      const peticiones = getPeticiones();
+      const nuevasNotificaciones = peticiones.map((peticion) => ({
+        id: peticion.id,
+        message: `Nueva solicitud de mejora en ${getGradeById(peticion.idM).nombre}`,
+        read: false,
+        fecha: peticion.fecha,
+      }));
+      setNotifications(nuevasNotificaciones);
+    };
+    loadNotifications();
+  }, [peticionesState]);
+
   const handleFileChange = (event) => setSelectedFile(event.target.files[0]);
   const handleFileUpload = () => {
     if (selectedFile) {
@@ -77,42 +89,35 @@ function MainApp() {
     navigate("/");
   };
 
-  // Materias para el usuario actual
-  let gradeMap = [];
-  for (let i = 0; i < cuenta.materias.length; i++) {
-    gradeMap.push(getGradeById(cuenta.materias[i]));
-  }
-
-  const users = getUsers();
+  const markNotificationAsRead = (id) => {
+    setNotifications(
+      notifications.map((notif) =>
+        notif.id === id ? { ...notif, read: true } : notif
+      )
+    );
+  };
 
   const can = (gradeId, userId) => {
     let nota = getNotaGradeById(gradeId, userId);
-    // Permite pedir mejora si la nota es menor o igual a 6.99 y el representante tiene menos de 3 intentos
     return !(nota <= 6.99 && cuenta.intentos < 3);
   };
 
   const handleConfirmImprovement = (tea) => {
-    // Incrementa el contador de intentos y cierra el modal
     cuenta.intentos++;
     alert("Mejora confirmada, intento asignado.");
     setVisible(false);
-    // Además, si es necesario, podrías agregar una nueva petición al arreglo:
     const nuevaPeticion = {
       idM: selectGrade.id,
       idTea: tea.id,
       idRep: cuenta.id,
       fecha: new Date().toLocaleString(),
-      nota: getNotaGradeById(selectGrade.id, cuenta.id), // o la nota solicitada
+      nota: getNotaGradeById(selectGrade.id, cuenta.id),
     };
     addPeticion(nuevaPeticion);
-    // Actualiza el estado de peticiones para que se vea la nueva
     setPeticionesState(getPeticiones());
     console.log(getPeticiones());
   };
 
-  // -------------
-  // Funciones para el panel Admin
-  // -------------
   const handleEditUser = (user) => {
     setSelectedUser(user);
     setEditNombre(user.nombreCompleto);
@@ -165,30 +170,50 @@ function MainApp() {
     }
   };
 
-  // -------------
-  // Fin funciones Admin
-  // -------------
+  const users = getUsers();
+  let gradeMap = [];
+  for (let i = 0; i < cuenta.materias.length; i++) {
+    gradeMap.push(getGradeById(cuenta.materias[i]));
+  }
 
   return (
     <div className="main-container">
       {/* Barra Superior */}
       <div className="top-bar">
         <h2 style={{ color: "white" }}>Sistema de Gestión Académica</h2>
-        <CButton color="danger" onClick={handleLogout}>
-          Cerrar Sesión
-        </CButton>
+        <div className="notification-area">
+          <CDropdown>
+            <CDropdownToggle color="primary">
+              Notificaciones
+              <CBadge color="danger">
+                {notifications.filter((n) => !n.read).length}
+              </CBadge>
+            </CDropdownToggle>
+            <CDropdownMenu>
+              {notifications.map((notif) => (
+                <CDropdownItem
+                  key={notif.id}
+                  onClick={() => markNotificationAsRead(notif.id)}
+                >
+                  {notif.message}{" "}
+                  {!notif.read && <CBadge color="info">Nuevo</CBadge>}
+                </CDropdownItem>
+              ))}
+            </CDropdownMenu>
+          </CDropdown>
+          <CButton color="danger" onClick={handleLogout}>
+            Cerrar Sesión
+          </CButton>
+        </div>
       </div>
-
       <CContainer>
         <CRow>
           {/* Vista Admin: Panel de Gestión de Usuarios */}
           {roleUser === "admin" ? (
             <CCol lg={12} md={12} sm={12}>
               <div className="admin-section">
-                <h3 className="mb-4" style={{ color: "white" }}>
-                  Panel de Administrador - Gestión de Usuarios
-                </h3>
-                <CListGroup style={{ backgroundColor: "#333" }}>
+                <h3 className="mb-4">Panel de Administrador - Gestión de Usuarios</h3>
+                <CListGroup>
                   {users.map((user) => (
                     <CListGroupItem key={user.id} className="admin-item">
                       <p>
@@ -237,22 +262,14 @@ function MainApp() {
             <>
               <CCol lg={8} md={8} sm={12}>
                 <div className="left-section">
-                  <h3 className="mb-4" style={{ color: "white" }}>
-                    Materias
-                  </h3>
+                  <h3 className="mb-4">Materias</h3>
                   <CListGroup>
                     {gradeMap.map((materia) => (
                       <CListGroupItem key={materia.id} className="materia-item">
                         <div className="materia-info">
-                          <strong style={{ color: "white" }}>
-                            {materia.nombre}
-                          </strong>
-                          <p style={{ color: "white" }}>
-                            Docente/s: {teaGradeById(materia.id) + " "}
-                          </p>
-                          <p style={{ color: "white" }}>
-                            Nota: {getNotaGradeById(materia.id, cuenta.id)}
-                          </p>
+                          <strong>{materia.nombre}</strong>
+                          <p>Docente/s: {teaGradeById(materia.id)}</p>
+                          <p>Nota: {getNotaGradeById(materia.id, cuenta.id)}</p>
                         </div>
                         <CButton
                           color="primary"
@@ -311,22 +328,15 @@ function MainApp() {
             <>
               <CCol lg={8} md={8} sm={12}>
                 <div className="left-section">
-                  <h3 className="mb-4" style={{ color: "white" }}>
-                    Materias que Enseña
-                  </h3>
+                  <h3 className="mb-4">Materias que Enseña</h3>
                   <CListGroup>
                     {gradeMap.map((materia) => (
                       <CListGroupItem key={materia.id} className="materia-item">
                         <div className="materia-info">
-                          <strong style={{ color: "white" }}>
-                            {materia.nombre}
-                          </strong>
-                          <p style={{ color: "white" }}>
-                            Estudiantes Registrados:{" "}
-                            {usersInGradeById(materia.id)}
-                          </p>
-                          <p style={{ color: "white" }}>Recuperaciones:</p>
-                          <p style={{ color: "white" }}>Promedio General:</p>
+                          <strong>{materia.nombre}</strong>
+                          <p>Estudiantes Registrados: {usersInGradeById(materia.id)}</p>
+                          <p>Recuperaciones:</p>
+                          <p>Promedio General:</p>
                         </div>
                       </CListGroupItem>
                     ))}

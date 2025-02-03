@@ -11,36 +11,70 @@
 }
 
 .login-box {
-  background: rgba(255, 255, 255, 0.068); /* Fondo blanco semitransparente */
-  backdrop-filter: blur(10px); /* Efecto de desenfoque */
+  background: #ffffff; /* Fondo blanco sólido */
   border-radius: 12px; /* Bordes redondeados */
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Sombra suave */
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); /* Sombra más pronunciada */
   padding: 40px 20px; /* Espaciado interno */
   width: 100%; /* Asegura que se ajuste a los tamaños de dispositivos */
   max-width: 400px; /* Tamaño máximo del cuadro */
 }
 
-/* Fondo transparente y texto blanco para los inputs */
+/* Estilos para los inputs */
 .login-box .form-control {
-  background-color: transparent; /* Fondo transparente */
-  color: white; /* Texto blanco */
-  border: 1px solid white; /* Borde blanco */
+  background-color: #ffffff; /* Fondo blanco */
+  color: #000000; /* Texto negro */
+  border: 1px solid #ced4da; /* Borde gris */
+  border-radius: 8px; /* Bordes redondeados */
+  padding: 10px; /* Espaciado interno */
+  margin-bottom: 15px; /* Espaciado entre inputs */
 }
 
-/* Cambiar el color del label */
+/* Estilos para los labels */
 .login-box .form-label {
-  color: white; /* Color blanco */
+  color: #000000; /* Color negro */
+  font-weight: 500; /* Texto en negrita */
+  margin-bottom: 8px; /* Espaciado entre label e input */
 }
 
-/* Placeholder con texto blanco y opacidad */
+/* Placeholder con texto gris */
 .login-box .form-control::placeholder {
-  color: rgba(255, 255, 255, 0.7); /* Placeholder blanco con opacidad */
+  color: #6c757d; /* Placeholder gris */
+  opacity: 1; /* Sin opacidad */
 }
 
 /* Inputs al enfocarse */
 .login-box .form-control:focus {
-  background-color: transparent; /* Mantener fondo transparente */
-  color: white; /* Mantener texto blanco */
+  background-color: #ffffff; /* Mantener fondo blanco */
+  color: #000000; /* Mantener texto negro */
   border-color: #007bff; /* Cambiar el color del borde al enfocarse */
-  box-shadow: none; /* Evitar el efecto de sombra */
+  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25); /* Sombra al enfocarse */
+}
+
+/* Estilos para el botón de inicio de sesión */
+.login-box .btn-primary {
+  background-color: #007bff; /* Color azul */
+  border: none; /* Sin borde */
+  border-radius: 8px; /* Bordes redondeados */
+  padding: 10px; /* Espaciado interno */
+  font-weight: 500; /* Texto en negrita */
+  width: 100%; /* Ancho completo */
+  margin-top: 10px; /* Espaciado superior */
+}
+
+.login-box .btn-primary:hover {
+  background-color: #0056b3; /* Color azul más oscuro al pasar el mouse */
+}
+
+/* Estilos para el enlace de registro o recuperación */
+.login-box .login-link {
+  color: #007bff; /* Color azul */
+  text-decoration: none; /* Sin subrayado */
+  font-weight: 500; /* Texto en negrita */
+  display: block; /* Mostrar en bloque */
+  text-align: center; /* Centrar texto */
+  margin-top: 15px; /* Espaciado superior */
+}
+
+.login-box .login-link:hover {
+  text-decoration: underline; /* Subrayado al pasar el mouse */
 }
