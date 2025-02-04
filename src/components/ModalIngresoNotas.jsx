@@ -8,6 +8,7 @@ import {
   CFormInput,
   CButton,
 } from "@coreui/react";
+import "./ModalIngresosNotas.css";
 
 const ModalIngresoNotas = ({ isOpen, onClose, users, grades, profesorId }) => {
   const [materiaSeleccionada, setMateriaSeleccionada] = useState("");
@@ -17,6 +18,7 @@ const ModalIngresoNotas = ({ isOpen, onClose, users, grades, profesorId }) => {
   const [notaProyecto, setNotaProyecto] = useState("");
   const [gradoSeleccionado, setGradoSeleccionado] = useState("");
   const [paraleloSeleccionado, setParaleloSeleccionado] = useState("");
+  const [jornadaSeleccionada, setJornadaSeleccionada] = useState(""); // Nuevo estado para la jornada
 
   // Calculamos la nota final en tiempo real
   const calcularNotaFinal = () => {
@@ -34,7 +36,8 @@ const ModalIngresoNotas = ({ isOpen, onClose, users, grades, profesorId }) => {
       user.role === "Representante" &&
       user.materias.includes(Number(materiaSeleccionada)) &&
       user.grado === gradoSeleccionado && // Filtra por grado
-      user.paralelo === paraleloSeleccionado // Filtra por paralelo
+      user.paralelo === paraleloSeleccionado && // Filtra por paralelo
+      user.jornada === jornadaSeleccionada // Filtra por jornada
   );
 
   const handleGuardarNota = () => {
@@ -99,6 +102,7 @@ const ModalIngresoNotas = ({ isOpen, onClose, users, grades, profesorId }) => {
     setNotaEvaluacion("");
     setNotaProyecto("");
     setEstudianteSeleccionado("");
+    setJornadaSeleccionada(""); // Limpiar la jornada seleccionada
     onClose();
   };
 
@@ -151,6 +155,17 @@ const ModalIngresoNotas = ({ isOpen, onClose, users, grades, profesorId }) => {
             )
           )}
         </CFormSelect>
+
+        <label className="mt-2">Jornada</label>
+        <CFormSelect
+          value={jornadaSeleccionada}
+          onChange={(e) => setJornadaSeleccionada(e.target.value)}
+        >
+          <option value="">Seleccione una jornada</option>
+          <option value="Matutina">Matutina</option>
+          <option value="Vespertina">Vespertina</option>
+        </CFormSelect>
+
         <label className="mt-2">Estudiante</label>
         <CFormSelect
           value={estudianteSeleccionado}
@@ -163,6 +178,7 @@ const ModalIngresoNotas = ({ isOpen, onClose, users, grades, profesorId }) => {
             </option>
           ))}
         </CFormSelect>
+
         <label className="mt-2">Nota de Actividades en Clase</label>
         <CFormInput
           type="number"
