@@ -398,7 +398,10 @@ function MainApp() {
 
                         <CButton
                           color="primary"
-                          onClick={() => handleEditUser(user)}
+                          onClick={() => {
+                            handleEditUser(user);
+                            console.log(user);
+                          }}
                           className="m-1"
                         >
                           Editar
