@@ -630,13 +630,14 @@ function MainApp() {
               onChange={handleFileChange}
               className="mt-2"
             />
+            {/*}
             <CButton
               color="success"
               onClick={handleFileUpload}
               className="mt-2"
             >
               Subir Documento
-            </CButton>
+            </CButton>{*/}
           </CModalBody>
           <CModalFooter>
             <CButton color="secondary" onClick={() => setVisible(false)}>
