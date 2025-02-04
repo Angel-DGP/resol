@@ -80,7 +80,7 @@ function MainApp() {
         findUserById(pet.idRep).paralelo
       }"`;
     } else if (roleUser === "admin") {
-      return `Nueva solicitud de mejora realizada de la materia de${
+      return `Nueva solicitud de mejora realizada de la materia de ${
         getGradeById(pet.idM).nombre
       } por ${findUserById(pet.idRep).nombreCompleto} del ${
         findUserById(pet.idRep).grado
@@ -114,7 +114,6 @@ function MainApp() {
   useEffect(() => {
     const loadNotifications = () => {
       const peticiones = getPeticionesById(cuenta.id);
-      console.log(peticiones);
       const nuevasNotificaciones = peticiones.map((peticion) => ({
         id: peticion.id,
         message: msg(peticion),
@@ -131,6 +130,7 @@ function MainApp() {
   const handleFileUpload = () => {
     if (selectedFile) {
       console.log("Archivo subido:", selectedFile.name);
+
       alert("Archivo subido exitosamente");
     } else {
       alert("Por favor, seleccione un archivo antes de subirlo.");
@@ -187,7 +187,6 @@ function MainApp() {
     };
     addPeticion(nuevaPeticion);
     setPeticionesState(getPeticiones());
-    console.log(getPeticiones());
   };
 
   const handleEditUser = (user) => {
@@ -266,7 +265,6 @@ function MainApp() {
         setStatePeticion(selectedNotification.id, "Aceptada");
       });
       setPeticionesState(updatedPeticiones);
-      console.log(getPeticiones());
     }
     setNotificationModalVisible(false);
   };
@@ -276,6 +274,29 @@ function MainApp() {
   for (let i = 0; i < cuenta.materias.length; i++) {
     gradeMap.push(getGradeById(cuenta.materias[i]));
   }
+  const promedio = (idM, idC) => {
+    let totalNotas = 0;
+    let cantidadNotas = 0;
+
+    for (let i = 0; i < users.length; i++) {
+      let notaObj = getNotaGradeById(idM, users[i].id);
+
+      // Verificar si la nota existe y es un número válido
+      if (
+        notaObj &&
+        !isNaN(notaObj.notaFinal) &&
+        notaObj.notaFinal !== "No ingresado"
+      ) {
+        totalNotas += parseFloat(notaObj.notaFinal);
+        cantidadNotas++;
+      }
+    }
+
+    // Evitar dividir por 0
+    return cantidadNotas > 0
+      ? (totalNotas / cantidadNotas).toFixed(2)
+      : "Sin notas";
+  };
 
   return (
     <div className="main-container">
@@ -400,7 +421,6 @@ function MainApp() {
                           color="primary"
                           onClick={() => {
                             handleEditUser(user);
-                            console.log(user);
                           }}
                           className="m-1"
                         >
@@ -537,8 +557,13 @@ function MainApp() {
                             Estudiantes Registrados:{" "}
                             {usersInGradeById(materia.id)}
                           </p>
-                          <p>Recuperaciones:</p>
-                          <p>Promedio General:</p>
+                          <p>
+                            Recuperaciones:{" "}
+                            {getPeticionesById(cuenta.id).length}
+                          </p>
+                          <p>
+                            Promedio General: {promedio(materia.id, cuenta.id)}
+                          </p>
                         </div>
                       </CListGroupItem>
                     ))}
@@ -573,9 +598,9 @@ function MainApp() {
       {/* Modal para Representante: Pedir Mejora de Calificación */}
       {roleUser === "Representante" && (
         <CModal visible={visible} onClose={() => setVisible(false)}>
-          <CModalHeader>Pedir Mejora de Calificación</CModalHeader>
+          <CModalHeader>Pedir Mejora {mejora} de Calificación</CModalHeader>
           <CModalBody>
-            Descargue el PDF para firmarlo digitalmente. <br />
+            Descargue el PDF para firmarlo (digitalmente/manualmente). <br />
             <PDFDownloadLink
               document={
                 <MyDocument
@@ -674,18 +699,22 @@ function MainApp() {
               value={editMaterias}
               onChange={(e) => setEditMaterias(e.target.value)}
             />
-            <CFormLabel>Intentos Indirectos</CFormLabel>
-            <CFormInput
-              type="number"
-              value={editIntentosI}
-              onChange={(e) => setEditIntentosI(e.target.value)}
-            />
-            <CFormLabel>Intentos Directos</CFormLabel>
-            <CFormInput
-              type="number"
-              value={editIntentosD}
-              onChange={(e) => setEditIntentosD(e.target.value)}
-            />
+            {editRole !== "Profesor" && (
+              <>
+                <CFormLabel>Intentos Indirectos</CFormLabel>
+                <CFormInput
+                  type="number"
+                  value={editIntentosI}
+                  onChange={(e) => setEditIntentosI(e.target.value)}
+                />
+                <CFormLabel>Intentos Directos</CFormLabel>
+                <CFormInput
+                  type="number"
+                  value={editIntentosD}
+                  onChange={(e) => setEditIntentosD(e.target.value)}
+                />
+              </>
+            )}
           </CModalBody>
           <CModalFooter>
             <CButton

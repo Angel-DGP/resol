@@ -138,7 +138,7 @@ let users = [
     intentosD: 0,
   },
   {
-    id: 4,
+    id: 5,
     email: "res@res.com",
     password: "res",
     representanteNombre: "Arruay Rer Saer",
@@ -243,28 +243,7 @@ let grades = [
 
 // Array de peticiones (solicitudes de mejora)
 // Cada petición registra: id, idM (materia), idTea (profesor que ingresa la nota), idRep (representante que solicita la mejora), fecha y nota (solicitada)
-let peticiones = [
-  {
-    id: 1,
-    idM: 1,
-    idTea: 1,
-    idRep: 2,
-    fecha: "2023-01-01 10:00",
-    nota: 5.5,
-    mejora: "Indirecta",
-    estado: "Pendiente",
-  },
-  {
-    id: 2,
-    idM: 1,
-    idTea: 1,
-    idRep: 3,
-    fecha: "2023-01-01 10:00",
-    nota: 7.5,
-    mejora: "Directa",
-    estado: "Pendiente",
-  },
-];
+let peticiones = [{}, {}];
 
 let userLogin = 0;
 
